@@ -82,17 +82,17 @@ namespace dotchat
                 TcpListener listener = new(IPAddress.Any, 9000);
                 listener.Start();
 
-                lstChat.Items.Add("Listening for a client.");
+                this.lstChat.Items.Add("Listening for a client.");
 
                 client = listener.AcceptTcpClient();
-                lstChat.Items.Add("Connecting...");
+                this.lstChat.Items.Add("Connecting...");
 
                 thread = new(ReceiveData);
                 thread.Start();
             }
             catch (Exception ex)
             {
-                lstChat.Items.Add($"Error: {ex.Message}");
+                lstChat.Items.Add($"Server Error: {ex.Message}");
             }
         }
 
@@ -110,7 +110,7 @@ namespace dotchat
             }
             catch (Exception ex)
             {
-                lstChat.Items.Add($"Error: {ex.Message}");
+                lstChat.Items.Add($"Client Connect Error: {ex.Message}");
             }
         }
 
@@ -145,7 +145,7 @@ namespace dotchat
             }
             catch (Exception ex)
             {
-                lstChat.Items.Add($"Error: {ex.Message}");
+                lstChat.Items.Add($"Client Send Error: {ex.Message}");
             }
         }
     }
