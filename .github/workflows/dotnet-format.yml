@@ -1,0 +1,25 @@
+name: Check Code Formatting & Linting
+
+on: [push, pull_request]
+
+jobs:
+  format-lint:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0'
+
+      - name: Restore Dependencies
+        run: dotnet restore
+
+      - name: Run Code Formatter
+        run: dotnet format --verify-no-changes
+
+      - name: Run Code Analyzers (Linting)
+        run: dotnet build --no-restore /warnaserror
