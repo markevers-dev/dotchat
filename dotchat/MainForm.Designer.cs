@@ -63,7 +63,6 @@
             ConnectBox.TabIndex = 2;
             ConnectBox.TabStop = false;
             ConnectBox.Text = "Connect to Server:";
-            ConnectBox.Enter += groupBox1_Enter;
             // 
             // ChatserverIPLabel
             // 
@@ -80,7 +79,7 @@
             txtServerIP.Name = "txtServerIP";
             txtServerIP.Size = new Size(170, 23);
             txtServerIP.TabIndex = 1;
-            txtServerIP.Text = "txtServerIP";
+            txtServerIP.Text = "127.0.0.1";
             // 
             // btnConnect
             // 
@@ -137,7 +136,6 @@
             Font = new Font("Yu Gothic UI", 9F, FontStyle.Bold);
             Name = "Form1";
             Text = "NotS - dotchat";
-            Load += Form1_Load;
             ConnectBox.ResumeLayout(false);
             ConnectBox.PerformLayout();
             ResumeLayout(false);

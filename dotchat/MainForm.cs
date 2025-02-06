@@ -8,7 +8,7 @@ using System.Windows.Forms.VisualStyles;
 
 namespace dotchat
 {
-    public delegate void StringDelegate(string message);
+    public delegate void StringDelegate(string message, bool isIncoming = true);
 
     public partial class Form1 : Form
     {
@@ -19,9 +19,28 @@ namespace dotchat
         public Form1()
         {
             InitializeComponent();
+
+            this.txtMessage.KeyPress += (s, e) =>
+            {
+                if (e.KeyChar == (char)Keys.Enter)
+                {
+                    btnSend.PerformClick();
+                }
+            };
+
         }
 
-        private void UpdateChat(string message)
+        private void moveChatPosition()
+        {
+            lstChat.TopIndex = lstChat.Items.Count - 1;
+
+            if (lstChat.Items.Count > 100)
+            {
+                lstChat.Items.RemoveAt(0);
+            }
+        }
+
+        private void UpdateChat(string message, bool isIncoming = true)
         {
             if (lstChat.InvokeRequired)
             {
@@ -30,7 +49,10 @@ namespace dotchat
                 return;
             }
 
-            lstChat.Items.Add(message);
+            string formattedMessage = isIncoming ? ">> " + message : "<< " + message;
+            lstChat.Items.Add(formattedMessage);
+
+            moveChatPosition();
         }
 
         private void ReceiveData()
@@ -38,40 +60,47 @@ namespace dotchat
             try
             {
                 int bytesRead;
-                string message = string.Empty;
-
-                byte[] buffer = new byte[1024];
+                byte[] lengthBuffer = new byte[4];
+                StringBuilder messageBuilder = new();
 
                 stream = client.GetStream();
-
-                this.Invoke(new StringDelegate(UpdateChat), "Connected!");
+                this.Invoke(new StringDelegate(UpdateChat), "Connected!", true);
 
                 while (true)
                 {
-                    bytesRead = stream.Read(buffer, 0, buffer.Length);
+                    bytesRead = stream.Read(lengthBuffer, 0, lengthBuffer.Length);
+                    if (bytesRead == 0)
+                        break;
 
-                    message = Encoding.ASCII.GetString(buffer, 0, bytesRead);
+                    int messageLength = BitConverter.ToInt32(lengthBuffer, 0);
+
+                    byte[] messageBytes = new byte[messageLength];
+
+                    bytesRead = stream.Read(messageBytes, 0, messageLength);
+                    if (bytesRead == 0)
+                        break;
+
+                    string message = Encoding.ASCII.GetString(messageBytes, 0, bytesRead);
 
                     if (message.ToLower() == "bye")
                     {
                         break;
                     }
 
-                    this.Invoke(new StringDelegate(UpdateChat), message);
+                    this.Invoke(new StringDelegate(UpdateChat), message, true);
                 }
 
                 byte[] byeMessage = Encoding.ASCII.GetBytes("bye");
-
                 stream.Write(byeMessage, 0, byeMessage.Length);
 
                 stream.Close();
                 client.Close();
 
-                this.Invoke(new StringDelegate(UpdateChat), "Connection closed.");
+                this.Invoke(new StringDelegate(UpdateChat), "Connection closed.", true);
             }
             catch (Exception ex)
             {
-                this.Invoke(new StringDelegate(UpdateChat), $"Error: {ex.Message}");
+                this.Invoke(new StringDelegate(UpdateChat), $"Error: {ex.Message}", true);
             }
         }
 
@@ -83,6 +112,11 @@ namespace dotchat
                 listener.Start();
 
                 this.lstChat.Items.Add("Listening for a client.");
+
+                btnListen.Enabled = false;
+                btnConnect.Enabled = false;
+                btnSend.Enabled = false;
+                txtMessage.Enabled = false;
 
                 client = listener.AcceptTcpClient();
                 this.lstChat.Items.Add("Connecting...");
@@ -100,6 +134,9 @@ namespace dotchat
         {
             try
             {
+                btnListen.Enabled = false;
+                btnConnect.Enabled = false;
+
                 lstChat.Items.Add("Connecting...");
 
                 string serverIP = txtServerIP.Text;
@@ -111,41 +148,42 @@ namespace dotchat
             catch (Exception ex)
             {
                 lstChat.Items.Add($"Client Connect Error: {ex.Message}");
+                btnListen.Enabled = true;
+                btnConnect.Enabled = true;
             }
-        }
-
-        private void groupBox1_Enter(object sender, EventArgs e)
-        {
-
-        }
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
-
         }
 
         private void btnSend_Click(object sender, EventArgs e)
         {
+            string message = string.Empty;
             try
             {
-                byte[] buffer = new byte[1024];
+                message = txtMessage.Text;
 
-                string message = txtMessage.Text;
-                buffer = Encoding.ASCII.GetBytes(message);
+                if (string.IsNullOrEmpty(message))
+                    return;
+
+                byte[] messageBytes = Encoding.ASCII.GetBytes(message);
+                byte[] lengthBytes = BitConverter.GetBytes(messageBytes.Length);
 
                 if (client != null && stream != null)
                 {
-                    stream.Write(buffer, 0, buffer.Length);
+                    stream.Write(lengthBytes, 0, lengthBytes.Length);
+                    stream.Write(messageBytes, 0, messageBytes.Length);
                 }
-
-                lstChat.Items.Add("You: " + message);
-
-                txtMessage.Clear();
-                txtMessage.Focus();
             }
             catch (Exception ex)
             {
                 lstChat.Items.Add($"Client Send Error: {ex.Message}");
+            }
+            finally
+            {
+                lstChat.Items.Add("<< " + message);
+
+                moveChatPosition();
+
+                txtMessage.Clear();
+                txtMessage.Focus();
             }
         }
     }
