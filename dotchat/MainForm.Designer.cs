@@ -29,13 +29,13 @@
         private void InitializeComponent()
         {
             button1 = new Button();
-            richTextBox1 = new RichTextBox();
             groupBox1 = new GroupBox();
             label1 = new Label();
             textBox2 = new TextBox();
             button2 = new Button();
             button3 = new Button();
             textBox1 = new TextBox();
+            lstChat = new ListBox();
             groupBox1.SuspendLayout();
             SuspendLayout();
             // 
@@ -48,15 +48,6 @@
             button1.TabIndex = 0;
             button1.Text = "btnListen";
             button1.UseVisualStyleBackColor = true;
-            // 
-            // richTextBox1
-            // 
-            richTextBox1.Font = new Font("Yu Gothic UI", 9F, FontStyle.Bold);
-            richTextBox1.Location = new Point(12, 12);
-            richTextBox1.Name = "richTextBox1";
-            richTextBox1.Size = new Size(588, 388);
-            richTextBox1.TabIndex = 1;
-            richTextBox1.Text = "lstChat";
             // 
             // groupBox1
             // 
@@ -120,6 +111,15 @@
             textBox1.TabIndex = 4;
             textBox1.Text = "txtMessage";
             // 
+            // lstChat
+            // 
+            lstChat.FormattingEnabled = true;
+            lstChat.ItemHeight = 15;
+            lstChat.Location = new Point(12, 12);
+            lstChat.Name = "lstChat";
+            lstChat.Size = new Size(588, 394);
+            lstChat.TabIndex = 5;
+            // 
             // Form1
             // 
             AccessibleName = "";
@@ -127,10 +127,10 @@
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.WindowFrame;
             ClientSize = new Size(800, 450);
+            Controls.Add(lstChat);
             Controls.Add(textBox1);
             Controls.Add(button3);
             Controls.Add(groupBox1);
-            Controls.Add(richTextBox1);
             Controls.Add(button1);
             Font = new Font("Yu Gothic UI", 9F, FontStyle.Bold);
             Name = "Form1";
@@ -145,12 +145,12 @@
         #endregion
 
         private Button button1;
-        private RichTextBox richTextBox1;
         private GroupBox groupBox1;
         private Button button2;
         private Label label1;
         private TextBox textBox2;
         private Button button3;
         private TextBox textBox1;
+        private ListBox lstChat;
     }
 }
