@@ -4,6 +4,9 @@ This application was made as the first assignment for the I-NotS WIN 2025 P3 cou
 
 ### Answers to Assignment Questions
 
-- 11A: *
-- 11B: *
+The quesions will be answered in Dutch, as the assignment was also given in Dutch.
+
+- 11A: The application running the server side shows messages longer than 2 characters on multiple lines, each line showing 2 characters of the message
+- 11B: De Read() methode leest de gegevens meerdere keren, om precies te zijn 2 bytes per keer. Hij blijft dus 2 bytes per keer lezen totdat hij klaar is met de data.
+- 11C: Alle data die per keer wordt gelezen eerst aan elkaar vast plakken voordat het wordt getoond, bijvoorbeeld met een StringBuilder.
 - 12E: *
