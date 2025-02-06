@@ -63,6 +63,9 @@ namespace dotchat
                 byte[] lengthBuffer = new byte[4];
                 StringBuilder messageBuilder = new();
 
+                if (client == null)
+                    throw new Exception("Client is null");
+
                 stream = client.GetStream();
                 this.Invoke(new StringDelegate(UpdateChat), "Connected!", true);
 
