@@ -28,88 +28,90 @@
         /// </summary>
         private void InitializeComponent()
         {
-            button1 = new Button();
-            groupBox1 = new GroupBox();
-            label1 = new Label();
-            textBox2 = new TextBox();
-            button2 = new Button();
-            button3 = new Button();
-            textBox1 = new TextBox();
+            btnListen = new Button();
+            ConnectBox = new GroupBox();
+            ChatserverIPLabel = new Label();
+            txtServerIP = new TextBox();
+            btnConnect = new Button();
+            btnSend = new Button();
+            txtMessage = new TextBox();
             lstChat = new ListBox();
-            groupBox1.SuspendLayout();
+            ConnectBox.SuspendLayout();
             SuspendLayout();
             // 
-            // button1
+            // btnListen
             // 
-            button1.Font = new Font("Yu Gothic UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            button1.Location = new Point(606, 12);
-            button1.Name = "button1";
-            button1.Size = new Size(182, 40);
-            button1.TabIndex = 0;
-            button1.Text = "btnListen";
-            button1.UseVisualStyleBackColor = true;
+            btnListen.Font = new Font("Yu Gothic UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            btnListen.Location = new Point(606, 12);
+            btnListen.Name = "btnListen";
+            btnListen.Size = new Size(182, 40);
+            btnListen.TabIndex = 0;
+            btnListen.Text = "btnListen";
+            btnListen.UseVisualStyleBackColor = true;
+            btnListen.Click += btnListen_Click;
             // 
-            // groupBox1
+            // ConnectBox
             // 
-            groupBox1.Controls.Add(label1);
-            groupBox1.Controls.Add(textBox2);
-            groupBox1.Controls.Add(button2);
-            groupBox1.Font = new Font("Yu Gothic UI", 9F, FontStyle.Bold);
-            groupBox1.ForeColor = SystemColors.ControlLight;
-            groupBox1.Location = new Point(606, 92);
-            groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(182, 124);
-            groupBox1.TabIndex = 2;
-            groupBox1.TabStop = false;
-            groupBox1.Text = "Connect to Server:";
-            groupBox1.Enter += groupBox1_Enter;
+            ConnectBox.Controls.Add(ChatserverIPLabel);
+            ConnectBox.Controls.Add(txtServerIP);
+            ConnectBox.Controls.Add(btnConnect);
+            ConnectBox.Font = new Font("Yu Gothic UI", 9F, FontStyle.Bold);
+            ConnectBox.ForeColor = SystemColors.ControlLight;
+            ConnectBox.Location = new Point(606, 92);
+            ConnectBox.Name = "ConnectBox";
+            ConnectBox.Size = new Size(182, 124);
+            ConnectBox.TabIndex = 2;
+            ConnectBox.TabStop = false;
+            ConnectBox.Text = "Connect to Server:";
+            ConnectBox.Enter += groupBox1_Enter;
             // 
-            // label1
+            // ChatserverIPLabel
             // 
-            label1.AutoSize = true;
-            label1.Location = new Point(6, 24);
-            label1.Name = "label1";
-            label1.Size = new Size(79, 15);
-            label1.TabIndex = 2;
-            label1.Text = "Chatserver IP:";
+            ChatserverIPLabel.AutoSize = true;
+            ChatserverIPLabel.Location = new Point(6, 24);
+            ChatserverIPLabel.Name = "ChatserverIPLabel";
+            ChatserverIPLabel.Size = new Size(79, 15);
+            ChatserverIPLabel.TabIndex = 2;
+            ChatserverIPLabel.Text = "Chatserver IP:";
             // 
-            // textBox2
+            // txtServerIP
             // 
-            textBox2.Location = new Point(6, 42);
-            textBox2.Name = "textBox2";
-            textBox2.Size = new Size(170, 23);
-            textBox2.TabIndex = 1;
-            textBox2.Text = "txtServerIP";
+            txtServerIP.Location = new Point(6, 42);
+            txtServerIP.Name = "txtServerIP";
+            txtServerIP.Size = new Size(170, 23);
+            txtServerIP.TabIndex = 1;
+            txtServerIP.Text = "txtServerIP";
             // 
-            // button2
+            // btnConnect
             // 
-            button2.ForeColor = SystemColors.ControlText;
-            button2.Location = new Point(6, 84);
-            button2.Name = "button2";
-            button2.Size = new Size(170, 23);
-            button2.TabIndex = 0;
-            button2.Text = "btnConnect";
-            button2.UseVisualStyleBackColor = true;
+            btnConnect.ForeColor = SystemColors.ControlText;
+            btnConnect.Location = new Point(6, 84);
+            btnConnect.Name = "btnConnect";
+            btnConnect.Size = new Size(170, 23);
+            btnConnect.TabIndex = 0;
+            btnConnect.Text = "btnConnect";
+            btnConnect.UseVisualStyleBackColor = true;
+            btnConnect.Click += btnConnect_Click;
             // 
-            // button3
+            // btnSend
             // 
-            button3.Font = new Font("Yu Gothic UI", 9F, FontStyle.Bold);
-            button3.Location = new Point(512, 415);
-            button3.Name = "button3";
-            button3.Size = new Size(88, 23);
-            button3.TabIndex = 3;
-            button3.Text = "btnSend";
-            button3.UseVisualStyleBackColor = true;
-            button3.Click += button3_Click;
+            btnSend.Font = new Font("Yu Gothic UI", 9F, FontStyle.Bold);
+            btnSend.Location = new Point(512, 415);
+            btnSend.Name = "btnSend";
+            btnSend.Size = new Size(88, 23);
+            btnSend.TabIndex = 3;
+            btnSend.Text = "btnSend";
+            btnSend.UseVisualStyleBackColor = true;
+            btnSend.Click += btnSend_Click;
             // 
-            // textBox1
+            // txtMessage
             // 
-            textBox1.Font = new Font("Yu Gothic UI", 9F, FontStyle.Bold);
-            textBox1.Location = new Point(12, 415);
-            textBox1.Name = "textBox1";
-            textBox1.Size = new Size(494, 23);
-            textBox1.TabIndex = 4;
-            textBox1.Text = "txtMessage";
+            txtMessage.Font = new Font("Yu Gothic UI", 9F, FontStyle.Bold);
+            txtMessage.Location = new Point(12, 415);
+            txtMessage.Name = "txtMessage";
+            txtMessage.Size = new Size(494, 23);
+            txtMessage.TabIndex = 4;
+            txtMessage.Text = "txtMessage";
             // 
             // lstChat
             // 
@@ -128,29 +130,29 @@
             BackColor = SystemColors.WindowFrame;
             ClientSize = new Size(800, 450);
             Controls.Add(lstChat);
-            Controls.Add(textBox1);
-            Controls.Add(button3);
-            Controls.Add(groupBox1);
-            Controls.Add(button1);
+            Controls.Add(txtMessage);
+            Controls.Add(btnSend);
+            Controls.Add(ConnectBox);
+            Controls.Add(btnListen);
             Font = new Font("Yu Gothic UI", 9F, FontStyle.Bold);
             Name = "Form1";
             Text = "NotS - dotchat";
             Load += Form1_Load;
-            groupBox1.ResumeLayout(false);
-            groupBox1.PerformLayout();
+            ConnectBox.ResumeLayout(false);
+            ConnectBox.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
 
         #endregion
 
-        private Button button1;
-        private GroupBox groupBox1;
-        private Button button2;
-        private Label label1;
-        private TextBox textBox2;
-        private Button button3;
-        private TextBox textBox1;
+        private Button btnListen;
+        private GroupBox ConnectBox;
+        private Button btnConnect;
+        private Label ChatserverIPLabel;
+        private TextBox txtServerIP;
+        private Button btnSend;
+        private TextBox txtMessage;
         private ListBox lstChat;
     }
 }
