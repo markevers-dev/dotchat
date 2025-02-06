@@ -103,9 +103,9 @@ namespace dotchat
                 lstChat.Items.Add("Connecting...");
 
                 string serverIP = txtServerIP.Text;
-                client = new (serverIP, 9000);
+                client = new(serverIP, 9000);
 
-                thread = new (ReceiveData);
+                thread = new(ReceiveData);
                 thread.Start();
             }
             catch (Exception ex)
@@ -148,5 +148,5 @@ namespace dotchat
                 lstChat.Items.Add($"Error: {ex.Message}");
             }
         }
-        }
     }
+}
