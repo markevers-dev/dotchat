@@ -1,6 +1,6 @@
 ﻿namespace dotchat
 {
-    partial class MainForm
+    partial class ClientForm
     {
         /// <summary>
         ///  Required designer variable.
@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            btnListen = new Button();
             ConnectBox = new GroupBox();
             ChatserverIPLabel = new Label();
             txtServerIP = new TextBox();
@@ -38,17 +37,6 @@
             lstChat = new ListBox();
             ConnectBox.SuspendLayout();
             SuspendLayout();
-            // 
-            // btnListen
-            // 
-            btnListen.Font = new Font("Yu Gothic UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            btnListen.Location = new Point(606, 12);
-            btnListen.Name = "btnListen";
-            btnListen.Size = new Size(182, 40);
-            btnListen.TabIndex = 0;
-            btnListen.Text = "btnListen";
-            btnListen.UseVisualStyleBackColor = true;
-            btnListen.Click += btnListen_Click;
             // 
             // ConnectBox
             // 
@@ -90,7 +78,7 @@
             btnConnect.TabIndex = 0;
             btnConnect.Text = "btnConnect";
             btnConnect.UseVisualStyleBackColor = true;
-            btnConnect.Click += btnConnect_Click;
+            btnConnect.Click += BtnConnect_Click;
             // 
             // btnSend
             // 
@@ -101,7 +89,7 @@
             btnSend.TabIndex = 3;
             btnSend.Text = "btnSend";
             btnSend.UseVisualStyleBackColor = true;
-            btnSend.Click += btnSend_Click;
+            btnSend.Click += BtnSend_Click;
             // 
             // txtMessage
             // 
@@ -121,7 +109,7 @@
             lstChat.Size = new Size(588, 394);
             lstChat.TabIndex = 5;
             // 
-            // Form1
+            // ClientForm
             // 
             AccessibleName = "";
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -132,10 +120,9 @@
             Controls.Add(txtMessage);
             Controls.Add(btnSend);
             Controls.Add(ConnectBox);
-            Controls.Add(btnListen);
             Font = new Font("Yu Gothic UI", 9F, FontStyle.Bold);
-            Name = "Form1";
-            Text = "NotS - dotchat";
+            Name = "ClientForm";
+            Text = "NotS - dotchat - Client";
             ConnectBox.ResumeLayout(false);
             ConnectBox.PerformLayout();
             ResumeLayout(false);
@@ -144,7 +131,6 @@
 
         #endregion
 
-        private Button btnListen;
         private GroupBox ConnectBox;
         private Button btnConnect;
         private Label ChatserverIPLabel;

@@ -8,15 +8,15 @@ using System.Windows.Forms.VisualStyles;
 
 namespace dotchat
 {
-    public delegate void StringDelegate(string message, bool isIncoming = true);
+    //public delegate void StringDelegate(string message, bool isIncoming = true);
 
-    public partial class Form1 : Form
+    public partial class MainForm : Form
     {
         private TcpClient? client;
         private NetworkStream? stream;
         private Thread? thread;
 
-        public Form1()
+        public MainForm()
         {
             InitializeComponent();
 
@@ -28,6 +28,13 @@ namespace dotchat
                 }
             };
 
+            this.txtServerIP.KeyPress += (s, e) =>
+                {
+                    if (e.KeyChar == (char)Keys.Enter)
+                    {
+                        btnConnect.PerformClick();
+                    }
+                };
         }
 
         private void moveChatPosition()
