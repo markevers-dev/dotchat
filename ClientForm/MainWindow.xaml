@@ -6,7 +6,7 @@
         xmlns:src="clr-namespace:BaseFormLib;assembly=BaseFormLib"
         xmlns:local="clr-namespace:ClientForm"
         mc:Ignorable="d"
-        Title="Dotchat Client" Height="450" Width="800" Background="DarkGray">
+        Title="Dotchat Client" Height="450" Width="800" MinWidth="420" MinHeight="320" Background="DarkGray">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
@@ -17,9 +17,23 @@
             <ColumnDefinition Width="200"/>
         </Grid.ColumnDefinitions>
 
-        <ListBox x:Name="lstChat" Grid.Row="0" Grid.Column="0" Margin="10" Background="White" />
+        <ListBox x:Name="lstChat" Grid.Row="0" Grid.Column="0" Margin="10" Background="White">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding}" TextWrapping="Wrap"/>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
 
-        <Button x:Name="btnDisconnect" Content="Disconnect" Click="BtnDisconnect_Click" Margin="5" Grid.Row="1" Grid.Column="1" Visibility="Collapsed"/>
+        <Grid x:Name="stkMessage" Grid.Row="1" Grid.Column="0" Margin="10" Visibility="Collapsed">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBox x:Name="txtMessage" Height="25" Grid.Column="0" Margin="0,0,5,0"/>
+            <Button x:Name="btnSend" Content="Send" Click="BtnSend_Click" Grid.Column="1" Width="100" FontWeight="Bold"/>
+        </Grid>
 
         <GroupBox Header="Connect to Server:" x:Name="grpConnect" Grid.Row="0" Grid.Column="1" Margin="10" FontWeight="Bold">
             <StackPanel>
@@ -31,15 +45,23 @@
 
                 <Label Content="Username:"/>
                 <TextBox x:Name="txtUsername" Text="username" Margin="5"/>
-                <TextBlock x:Name="txtUsernameError" Text="Username must be between 1 and 35 characters." Foreground="Red" Visibility="Collapsed" Margin="5"/>
+                <TextBlock x:Name="txtUsernameError" Text="Username must be between 1 and 35 characters." Foreground="Red" Visibility="Collapsed" Margin="5" TextWrapping="Wrap"/>
 
                 <Button x:Name="btnConnect" Content="Connect" Click="BtnConnect_Click" Margin="5"/>
             </StackPanel>
         </GroupBox>
 
-        <StackPanel x:Name="stkMessage" Grid.Row="1" Grid.Column="0" Orientation="Horizontal" Margin="10" Visibility="Collapsed">
-            <TextBox x:Name="txtMessage" Width="472" Height="25"/>
-            <Button x:Name="btnSend" Content="Send" Click="BtnSend_Click" Margin="5"/>
-        </StackPanel>
+        <GroupBox Header="Connection Controls:" x:Name="grpControls" Grid.Row="0" Grid.Column="1" Margin="10" FontWeight="Bold" Visibility="Collapsed">
+            <StackPanel>
+                <Label Content="Buffer size:" />
+                <TextBox x:Name="txtBuffer" Text="1024" Margin="5"/>
+                <TextBlock x:Name="txtBufferError" Text="Buffer size must be a number between 4 and " Foreground="Red" Visibility="Collapsed" Margin="5" TextWrapping="Wrap"/>
+                <Button x:Name="btnBuffer" Content="Change Buffer size" Click="BtnBuffer_Click" Margin="5"/>
+
+                <RibbonSeparator Margin="5"/>
+
+                <Button x:Name="btnDisconnect" Content="Disconnect" Click="BtnDisconnect_Click" Margin="5" Grid.Row="1" Grid.Column="1"/>
+            </StackPanel>
+        </GroupBox>
     </Grid>
 </src:BaseForm>

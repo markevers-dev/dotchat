@@ -6,7 +6,7 @@
         xmlns:src="clr-namespace:BaseFormLib;assembly=BaseFormLib"
         xmlns:local="clr-namespace:ServerForm"
         mc:Ignorable="d"
-        Title="Dotchat Server" Height="450" Width="800" Background="DarkGray">
+        Title="Dotchat Server" Height="450" Width="800" MinWidth="420" MinHeight="225" Background="DarkGray">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
@@ -19,26 +19,42 @@
 
         <ListBox x:Name="lstChat" Grid.Row="0" Grid.Column="0" Margin="10" Background="White" />
 
-        <GroupBox Header="Server Controls:" x:Name="grpControls" Grid.Row="0" Grid.Column="1" Margin="10" FontWeight="Bold" Visibility="Collapsed">
-            <StackPanel>
-                <Button x:Name="btnStopListen" Content="Stop listening" Click="BtnStopListen_Click" Margin="5"/>
-            </StackPanel>
-        </GroupBox>
+        <Grid x:Name="stkMessage" Grid.Row="1" Grid.Column="0" Margin="10" Visibility="Collapsed">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
 
+            <TextBox x:Name="txtMessage" Height="25" Grid.Column="0" Margin="0,0,5,0"/>
+            <Button x:Name="btnSend" Content="Send" Click="BtnSend_Click" Grid.Column="1" Width="100" FontWeight="Bold"/>
+        </Grid>
 
         <GroupBox Header="Start Server:" x:Name="grpStart" Grid.Row="0" Grid.Column="1" Margin="10" FontWeight="Bold">
             <StackPanel>
+                <Label Content="Chatserver IP:" />
+                <TextBox x:Name="txtServerIP" Text="127.0.0.1" Margin="5" />
+                <TextBlock x:Name="txtServerIPError" Text="IP must be a valid IP address!" Foreground="Red" Visibility="Collapsed" Margin="5" TextWrapping="Wrap"/>
+
                 <Label Content="Chatserver Port:" />
                 <TextBox x:Name="txtServerPort" Text="9000" Margin="5" />
-                <TextBlock x:Name="txtServerPortError" Text="Port must be a number between 1 and 65535" Foreground="Red" Visibility="Collapsed" Margin="5"/>
+                <TextBlock x:Name="txtServerPortError" Text="Port must be a round number between 1 and 65535!" Foreground="Red" Visibility="Collapsed" Margin="5" TextWrapping="Wrap"/>
 
                 <Button x:Name="btnListen" Content="Listen" Click="BtnListen_Click" Margin="5"/>
+                <TextBlock x:Name="txtServerInUse" Text="The chosen IP address or Port is already in use. Please try a different combination!" Foreground="Red" Visibility="Collapsed" Margin="5" TextWrapping="Wrap"/>
             </StackPanel>
         </GroupBox>
-        
-        <StackPanel x:Name="stkMessage" Grid.Row="1" Grid.Column="0" Orientation="Horizontal" Margin="10" Visibility="Collapsed">
-            <TextBox x:Name="txtMessage" Width="472" Height="25"/>
-            <Button x:Name="btnSend" Content="Send" Click="BtnSend_Click" Margin="5"/>
-        </StackPanel>
+
+        <GroupBox Header="Server Controls:" x:Name="grpControls" Grid.Row="0" Grid.Column="1" Margin="10" FontWeight="Bold" Visibility="Collapsed">
+            <StackPanel>
+                <Label Content="Buffer size:" />
+                <TextBox x:Name="txtBuffer" Text="1024" Margin="5"/>
+                <TextBlock x:Name="txtBufferError" Text="Buffer size must be a round number between 1 and 8192" Foreground="Red" Visibility="Collapsed" Margin="5" TextWrapping="Wrap"/>
+                <Button x:Name="btnBuffer" Content="Change Buffer size" Click="BtnBuffer_Click" Margin="5"/>
+
+                <RibbonSeparator Margin="5"/>
+
+                <Button x:Name="btnStopListen" Content="Stop listening" Click="BtnStopListen_Click" Margin="5"/>
+            </StackPanel>
+        </GroupBox>
     </Grid>
 </src:BaseForm>
