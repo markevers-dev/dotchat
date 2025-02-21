@@ -94,7 +94,7 @@ namespace ServerForm
                     grpControls.Visibility = Visibility.Visible;
                     stkMessage.Visibility = Visibility.Collapsed;
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     await UpdateChat("An unexpected error occurred while trying to accept a user.");
                 }
@@ -148,17 +148,17 @@ namespace ServerForm
                     return;
                 }
 
-                        listener = new(serverIP, port);
-                        listener.Start();
+                listener = new(serverIP, port);
+                listener.Start();
 
-                        await UpdateChat("Listening for a client...");
+                await UpdateChat("Listening for a client...");
 
-                        grpStart.Visibility = Visibility.Collapsed;
+                grpStart.Visibility = Visibility.Collapsed;
 
-                        _ = Task.Run(() => AcceptClientsAsync());
+                _ = Task.Run(() => AcceptClientsAsync());
 
-                        grpControls.Visibility = Visibility.Visible;
-                        stkMessage.Visibility = Visibility.Visible;
+                grpControls.Visibility = Visibility.Visible;
+                stkMessage.Visibility = Visibility.Visible;
             }
             catch (SocketException)
             {
@@ -225,7 +225,7 @@ namespace ServerForm
             try
             {
                 using NetworkStream stream = client.GetStream();
-                byte[] lengthBytes = new byte[4];   
+                byte[] lengthBytes = new byte[4];
 
                 while (client.Connected && listener != null)
                 {
@@ -281,7 +281,7 @@ namespace ServerForm
 
         private async void BtnBuffer_Click(object sender, EventArgs e)
         {
-           await HandleBufferClick(txtBuffer, txtBufferError);
+            await HandleBufferClick(txtBuffer, txtBufferError);
         }
 
         private async Task BroadcastMessageToSingleClient(string message, TcpClient client)

@@ -37,7 +37,7 @@ namespace BaseFormLib
         {
             string inOutSymbol = isIncoming ? " >> " : " << ";
             DateTime dateTime = DateTime.Now;
-            
+
             return dateTime.ToString() + ": " + username + inOutSymbol + message;
         }
 
