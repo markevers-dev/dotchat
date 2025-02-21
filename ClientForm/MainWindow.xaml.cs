@@ -13,11 +13,9 @@ namespace ClientForm
     /// </summary>
     public partial class MainWindow : BaseForm
     {
-        // TODO: Add connection details (Username, IP, Port)
-        // TODO: Disable controls when after disconnected
-
         private string? username;
         private TcpClient? client;
+        private NetworkStream? stream;
         private static readonly string usernameUniqueError = "Username has already been taken, please try another username!";
         private bool isDisconnecting = false;
 
@@ -29,6 +27,25 @@ namespace ClientForm
             EnableTextFieldEnterControl(this.txtUsername, btnConnect);
             EnableTextFieldEnterControl(this.txtMessage, btnSend);
             EnableTextFieldEnterControl(this.txtBuffer, btnBuffer);
+        }
+        public void CloseConnection()
+        {
+            try
+            {
+                isDisconnecting = true;
+                stream?.Close();
+                stream?.Dispose();
+                client?.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Client disconnect error: {ex.Message}");
+            }
+            finally
+            {
+                stream = null;
+                client = null;
+            }
         }
 
         private static bool IsUsernameValid(string username)
@@ -42,36 +59,24 @@ namespace ClientForm
         private void TxtServerIP_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
             if (e.Key == System.Windows.Input.Key.Enter)
-            {
-                txtUsername.Focus();
-            }
+                txtServerPort.Focus();
         }
 
-        public async void BtnBuffer_Click(object sender, RoutedEventArgs e)
+        private void TxtServerPort_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
-            txtBufferError.Visibility = Visibility.Collapsed;
+            if (e.Key == System.Windows.Input.Key.Enter)
+                txtUsername.Focus();
+        }
 
-            if (!int.TryParse(txtBuffer.Text, out int size))
-            {
-                txtBufferError.Visibility = Visibility.Visible;
-                return;
-            }
-
-            if (size < minBufferSize || size > maxBufferSize)
-            {
-                txtBufferError.Visibility = Visibility.Visible;
-                return;
-            }
-
-            BufferSize = size;
-
-            if (client != null)
-            {
-                client.ReceiveBufferSize = BufferSize;
-                client.SendBufferSize = BufferSize;
-            }
-
-            await UpdateChat($"Buffer size updated to: {size}. Rec={client.ReceiveBufferSize}. Snd={client.SendBufferSize}");
+        private void ResetUIForConnecting()
+        {
+            txtUsernameError.Visibility = Visibility.Collapsed;
+            grpControls.Visibility = Visibility.Collapsed;
+            grpConnect.Visibility = Visibility.Visible;
+            stkMessage.Visibility = Visibility.Collapsed;
+            txtServerConnectError.Visibility = Visibility.Collapsed;
+            txtServerPortError.Visibility = Visibility.Collapsed;
+            txtServerIPError.Visibility = Visibility.Collapsed;
         }
 
         private async void BtnConnect_Click(object sender, EventArgs e)
@@ -79,10 +84,7 @@ namespace ClientForm
             try
             {
                 isDisconnecting = false;
-                txtUsernameError.Visibility = Visibility.Collapsed;
-                grpControls.Visibility = Visibility.Collapsed;
-                grpConnect.Visibility = Visibility.Visible;
-                stkMessage.Visibility = Visibility.Collapsed;
+                ResetUIForConnecting();
 
                 username = txtUsername.Text;
                 if (!IsUsernameValid(username))
@@ -91,68 +93,86 @@ namespace ClientForm
                     return;
                 }
 
-                if (IPAddress.TryParse(txtServerIP.Text ?? string.Empty, out IPAddress? serverIP))
+                if (!IPAddress.TryParse(txtServerIP.Text, out IPAddress? serverIP) || !Regex.IsMatch(txtServerIP.Text, ipPattern))
                 {
-                    if (int.TryParse(txtServerPort.Text, out int port))
-                    {
-                        if (port < 1 || port > 65535)
-                        {
-                            await UpdateChat("Server port must be between 1 and 65535.");
-                            return;
-                        }
-
-                        client = new(serverIP.ToString(), port);
-                        Stream = client.GetStream();
-
-                        byte[] usernameBytes = Encoding.ASCII.GetBytes(username);
-                        byte[] lengthBytes = BitConverter.GetBytes(usernameBytes.Length);
-                        Stream.Write(lengthBytes, 0, lengthBytes.Length);
-                        Stream.Write(usernameBytes, 0, usernameBytes.Length);
-
-                        _ = Task.Run(() => HandleServerResponseAsync());
-
-                        grpConnect.Visibility = Visibility.Collapsed;
-                        grpControls.Visibility = Visibility.Visible;
-                        stkMessage.Visibility = Visibility.Visible;
-
-                    }
-                    else
-                    {
-                        await UpdateChat("Server port must be a round number.");
-                        return;
-                    }
-                }
-                else
-                {
-                    await UpdateChat("Server IP must be a valid IP address.");
+                    txtServerIPError.Visibility = Visibility.Visible;
                     return;
                 }
+
+                if (!int.TryParse(txtServerPort.Text, out int port) || port < minPort || port > maxPort)
+                {
+                    txtServerPortError.Visibility = Visibility.Visible;
+                    return;
+                }
+
+                client = new();
+                await client.ConnectAsync(serverIP.ToString(), port);
+                stream = client.GetStream();
+
+                BufferSize = standardBufferSize;
+                await SendUsernameToServer();
+                _ = Task.Run(() => HandleServerResponseAsync());
             }
             catch (SocketException)
             {
-                await UpdateChat("Server is not available. Please try another IP Address or Port");
-                grpConnect.Visibility = Visibility.Visible;
-                grpControls.Visibility = Visibility.Collapsed;
-                stkMessage.Visibility = Visibility.Collapsed;
+                ShowConnectionError();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                lstChat.Items.Add($"Client Connect Error: {ex.Message}");
+                ShowConnectionError();
+            }
+        }
+
+        private void ShowConnectionError()
+        {
+            txtServerConnectError.Visibility = Visibility.Visible;
+            grpConnect.Visibility = Visibility.Visible;
+            grpControls.Visibility = Visibility.Collapsed;
+            stkMessage.Visibility = Visibility.Collapsed;
+        }
+
+        private async Task SendUsernameToServer()
+        {
+            if (stream == null || string.IsNullOrEmpty(username))
+                return;
+
+            byte[] usernameBytes = Encoding.ASCII.GetBytes(username);
+            byte[] lengthBytes = BitConverter.GetBytes(usernameBytes.Length);
+
+            stream.Write(lengthBytes, 0, lengthBytes.Length);
+
+            int totalBytesSent = 0;
+            while (totalBytesSent < usernameBytes.Length)
+            {
+                int chunkSize = Math.Min(BufferSize, usernameBytes.Length - totalBytesSent);
+                await stream.WriteAsync(usernameBytes, totalBytesSent, chunkSize);
+                totalBytesSent += chunkSize;
+            }
+        }
+
+        private async Task TurnOnConnectControls()
+        {
+            await Dispatcher.InvokeAsync(() =>
+            {
                 grpConnect.Visibility = Visibility.Visible;
                 grpControls.Visibility = Visibility.Collapsed;
                 stkMessage.Visibility = Visibility.Collapsed;
-            }
+                txtBuffer.Text = $"{standardBufferSize}";
+                BufferSize = standardBufferSize;
+                txtBufferError.Visibility = Visibility.Collapsed;
+            });
+        }
+
+        private async void BtnBuffer_Click(object sender, EventArgs e)
+        {
+            await HandleBufferClick(txtBuffer, txtBufferError);
         }
 
         private async Task HandleServerResponseAsync()
         {
             try
             {
-                if (client == null)
-                    throw new Exception("Client is null");
-
-                using var stream = client.GetStream();
-                await UpdateChat("Connected to server!");
+                if (client == null || stream == null) return;
 
                 while (client.Connected)
                 {
@@ -160,111 +180,113 @@ namespace ClientForm
 
                     int bytesRead = await stream.ReadAsync(lengthBytes, 0, lengthBytes.Length);
                     if (bytesRead == 0)
-                    {
                         throw new Exception("Disconnected from server.");
-                    }
 
                     int messageLength = BitConverter.ToInt32(lengthBytes, 0);
-                    if (messageLength <= 0)
-                    {
-                        continue;
-                    }
+                    if (messageLength <= 0) continue;
 
-                    byte[] buffer = new byte[messageLength];
+                    byte[] buffer = new byte[BufferSize];
+                    using MemoryStream messageStream = new();
+
                     int totalBytesRead = 0;
-
                     while (totalBytesRead < messageLength)
                     {
-                        int chunkSize = await stream.ReadAsync(buffer, totalBytesRead, messageLength - totalBytesRead);
+                        int chunkSize = await stream.ReadAsync(buffer, 0, Math.Min(BufferSize, messageLength - totalBytesRead));
                         if (chunkSize == 0)
-                        {
                             throw new Exception("Disconnected from server.");
-                        }
+
+                        messageStream.Write(buffer, 0, chunkSize);
                         totalBytesRead += chunkSize;
                     }
 
-                    string builtMessage = Encoding.ASCII.GetString(buffer, 0, totalBytesRead);
+                    string builtMessage = Encoding.ASCII.GetString(messageStream.ToArray());
 
-                    if (builtMessage.StartsWith("ERROR: Username already exists"))
+                    if (builtMessage.StartsWith(usernameError))
                     {
                         await UpdateChat(usernameUniqueError);
-                        grpConnect.Visibility = Visibility.Visible;
-                        grpControls.Visibility = Visibility.Collapsed;
-                        stkMessage.Visibility = Visibility.Collapsed;
-                        client.Close();
+                        await TurnOnConnectControls();
+                        CloseConnection();
+                        return;
+                    }
+
+                    if (builtMessage.StartsWith(serverShuttingDown))
+                    {
+                        CloseConnection();
+                        await UpdateChat(builtMessage);
+                        await UpdateChatOnDisconnect();
+                        await TurnOnConnectControls();
                         return;
                     }
 
                     await UpdateChat(builtMessage);
+                    await ShowChatControls();
                 }
             }
-            catch (IOException)
+            catch (Exception)
             {
-                if (isDisconnecting)
-                {
-                    await UpdateChat("Disconnected from server.");
-                }
-                else
-                {
-                    await UpdateChat("Server uenxpectedly closed down. You have been disconnected.");
-                }
-                
-                grpConnect.Visibility = Visibility.Visible;
-                grpControls.Visibility = Visibility.Collapsed;
-                stkMessage.Visibility = Visibility.Collapsed;
-            }
-            catch (Exception ex)
-            {
-                await UpdateChat(ex.Message);
-                grpConnect.Visibility = Visibility.Visible;
-                grpControls.Visibility = Visibility.Collapsed;
-                stkMessage.Visibility = Visibility.Collapsed;
+                await UpdateChatOnDisconnect();
+                await TurnOnConnectControls();
             }
         }
 
-        private void BtnDisconnect_Click(object sender, EventArgs e)
+        private async Task UpdateChatOnDisconnect()
         {
-            if (client == null)
+            if (isDisconnecting)
+                await UpdateChat("Disconnected from server.");
+            else
+                await UpdateChat("Server closed down uenxpectedly. You have been disconnected.");
+        }
+
+        private async Task ShowChatControls()
+        {
+            await Dispatcher.InvokeAsync(() =>
+            {
+                grpConnect.Visibility = Visibility.Collapsed;
+                grpControls.Visibility = Visibility.Visible;
+                stkMessage.Visibility = Visibility.Visible;
+            });
+        }
+        private async void BtnDisconnect_Click(object sender, EventArgs e)
+        {
+            if (client == null || !client.Connected)
                 return;
 
-            client.Close();
-            isDisconnecting = true;
-            grpConnect.Visibility = Visibility.Visible;
-            grpControls.Visibility = Visibility.Collapsed;
-            stkMessage.Visibility = Visibility.Collapsed;
-            txtBuffer.Text = "1024";
-            txtBufferError.Visibility = Visibility.Collapsed;
+            await TurnOnConnectControls();
+            CloseConnection();
         }
 
         private async void BtnSend_Click(object sender, EventArgs e)
         {
-            string message = string.Empty;
             try
             {
-                message = txtMessage.Text;
-
-                if (string.IsNullOrEmpty(message))
-                    return;
+                string message = txtMessage.Text;
+                if (string.IsNullOrEmpty(message)) return;
 
                 byte[] messageBytes = Encoding.ASCII.GetBytes(message);
                 byte[] lengthBytes = BitConverter.GetBytes(messageBytes.Length);
 
-                if (client != null && Stream != null)
+                if (client != null && stream != null && !string.IsNullOrEmpty(username))
                 {
-                    Stream.Write(lengthBytes, 0, lengthBytes.Length);
-                    Stream.Write(messageBytes, 0, messageBytes.Length);
-                }
+                    await stream.WriteAsync(lengthBytes, 0, lengthBytes.Length);
 
-                await UpdateChat(FormatMessage(message, username, false));
+                    int totalBytesSent = 0;
+                    while (totalBytesSent < messageBytes.Length)
+                    {
+                        int chunkSize = Math.Min(BufferSize, messageBytes.Length - totalBytesSent);
+                        await stream.WriteAsync(messageBytes, totalBytesSent, chunkSize);
+                        totalBytesSent += chunkSize;
+                    }
+
+                    await UpdateChat(FormatMessage(message, username, false));
+                }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                lstChat.Items.Add($"Client Send Error: {ex.Message}");
+                await UpdateChat("An error occurred while trying to send the message. Please try again later!");
             }
             finally
             {
                 MoveChatPosition();
-
                 txtMessage.Clear();
                 txtMessage.Focus();
             }

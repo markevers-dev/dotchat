@@ -6,7 +6,7 @@
         xmlns:src="clr-namespace:BaseFormLib;assembly=BaseFormLib"
         xmlns:local="clr-namespace:ClientForm"
         mc:Ignorable="d"
-        Title="Dotchat Client" Height="450" Width="800" MinWidth="420" MinHeight="320" Background="DarkGray">
+        Title="Dotchat Client" Height="450" Width="800" MinWidth="420" MinHeight="340" Background="DarkGray">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
@@ -39,15 +39,19 @@
             <StackPanel>
                 <Label Content="Chatserver IP:"/>
                 <TextBox x:Name="txtServerIP" Text="127.0.0.1" Margin="5" KeyDown="TxtServerIP_KeyDown"/>
+                <TextBlock x:Name="txtServerIPError" Text="IP must be a valid IP address!" Foreground="Red" Visibility="Collapsed" Margin="5" TextWrapping="Wrap"/>
 
                 <Label Content="Chatserver Port:"/>
-                <TextBox x:Name="txtServerPort" Text="9000" Margin="5" KeyDown="TxtServerIP_KeyDown"/>
+                <TextBox x:Name="txtServerPort" Text="9000" Margin="5" KeyDown="TxtServerPort_KeyDown"/>
+                <TextBlock x:Name="txtServerPortError" Text="Port must be a round number between 1 and 65535!" Foreground="Red" Visibility="Collapsed" Margin="5" TextWrapping="Wrap"/>
 
                 <Label Content="Username:"/>
                 <TextBox x:Name="txtUsername" Text="username" Margin="5"/>
                 <TextBlock x:Name="txtUsernameError" Text="Username must be between 1 and 35 characters." Foreground="Red" Visibility="Collapsed" Margin="5" TextWrapping="Wrap"/>
 
                 <Button x:Name="btnConnect" Content="Connect" Click="BtnConnect_Click" Margin="5"/>
+
+                <TextBlock x:Name="txtServerConnectError" Text="Server is not available. Please try another IP Address or Port!" Foreground="Red" Visibility="Collapsed" Margin="5" TextWrapping="Wrap"/>
             </StackPanel>
         </GroupBox>
 
@@ -55,7 +59,7 @@
             <StackPanel>
                 <Label Content="Buffer size:" />
                 <TextBox x:Name="txtBuffer" Text="1024" Margin="5"/>
-                <TextBlock x:Name="txtBufferError" Text="Buffer size must be a number between 4 and " Foreground="Red" Visibility="Collapsed" Margin="5" TextWrapping="Wrap"/>
+                <TextBlock x:Name="txtBufferError" Text="Buffer size must be a number between 1 and 8192" Foreground="Red" Visibility="Collapsed" Margin="5" TextWrapping="Wrap"/>
                 <Button x:Name="btnBuffer" Content="Change Buffer size" Click="BtnBuffer_Click" Margin="5"/>
 
                 <RibbonSeparator Margin="5"/>

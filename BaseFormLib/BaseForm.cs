@@ -8,17 +8,18 @@ namespace BaseFormLib
 {
     public class BaseForm : Window
     {
-        private NetworkStream? stream;
+        // TODO: Fix auto scroll not working properly!
+
         private ListBox? chatList;
-        private int bufferSize = 1024;
+        public static readonly int standardBufferSize = 1024;
         public static readonly int minBufferSize = 1;
         public static readonly int maxBufferSize = 8192;
-
-        public NetworkStream? Stream
-        {
-            get => stream;
-            set => stream = value;
-        }
+        private int bufferSize = standardBufferSize;
+        public static readonly string ipPattern = @"^((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])$";
+        public static readonly string serverShuttingDown = "Server is shutting down.";
+        public static readonly string usernameError = "ERROR: Username already exists";
+        public static readonly int minPort = 1;
+        public static readonly int maxPort = 65535;
 
         public ListBox? ChatList
         {
@@ -74,6 +75,26 @@ namespace BaseFormLib
                 chatList.Items.Add(message);
                 MoveChatPosition();
             });
+        }
+
+        public async Task HandleBufferClick(TextBox txtBuffer, TextBlock txtBufferError)
+        {
+            txtBufferError.Visibility = Visibility.Collapsed;
+
+            if (!int.TryParse(txtBuffer.Text, out int size))
+            {
+                txtBufferError.Visibility = Visibility.Visible;
+                return;
+            }
+
+            if (size < minBufferSize || size > maxBufferSize)
+            {
+                txtBufferError.Visibility = Visibility.Visible;
+                return;
+            }
+
+            BufferSize = size;
+            await UpdateChat($"Buffer size updated to: {size}.");
         }
     }
 

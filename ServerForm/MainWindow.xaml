@@ -6,7 +6,7 @@
         xmlns:src="clr-namespace:BaseFormLib;assembly=BaseFormLib"
         xmlns:local="clr-namespace:ServerForm"
         mc:Ignorable="d"
-        Title="Dotchat Server" Height="450" Width="800" MinWidth="420" MinHeight="225" Background="DarkGray">
+        Title="Dotchat Server"  Height="450" Width="800" MinWidth="420" MinHeight="340" Background="DarkGray">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
@@ -32,7 +32,7 @@
         <GroupBox Header="Start Server:" x:Name="grpStart" Grid.Row="0" Grid.Column="1" Margin="10" FontWeight="Bold">
             <StackPanel>
                 <Label Content="Chatserver IP:" />
-                <TextBox x:Name="txtServerIP" Text="127.0.0.1" Margin="5" />
+                <TextBox x:Name="txtServerIP" Text="127.0.0.1" Margin="5" KeyDown="TxtServerIP_KeyDown"/>
                 <TextBlock x:Name="txtServerIPError" Text="IP must be a valid IP address!" Foreground="Red" Visibility="Collapsed" Margin="5" TextWrapping="Wrap"/>
 
                 <Label Content="Chatserver Port:" />
@@ -40,7 +40,7 @@
                 <TextBlock x:Name="txtServerPortError" Text="Port must be a round number between 1 and 65535!" Foreground="Red" Visibility="Collapsed" Margin="5" TextWrapping="Wrap"/>
 
                 <Button x:Name="btnListen" Content="Listen" Click="BtnListen_Click" Margin="5"/>
-                <TextBlock x:Name="txtServerInUse" Text="The chosen IP address or Port is already in use. Please try a different combination!" Foreground="Red" Visibility="Collapsed" Margin="5" TextWrapping="Wrap"/>
+                <TextBlock x:Name="txtServerInUse" Text="The chosen IP address and Port are unavailable. Please try a different combination!" Foreground="Red" Visibility="Collapsed" Margin="5" TextWrapping="Wrap"/>
             </StackPanel>
         </GroupBox>
 
