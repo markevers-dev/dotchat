@@ -13,10 +13,6 @@ namespace ServerForm
     /// </summary>
     public partial class MainWindow : BaseForm
     {
-        // TODO: Add IP/Port validation
-        // TODO: Make it actually use the fkn BufferSize
-        // TODO: Fix form min height
-
         private TcpListener? listener;
         private readonly Dictionary<string, TcpClient> connectedClients = [];
         private readonly string serverName = "Server";

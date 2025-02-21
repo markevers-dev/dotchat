@@ -8,8 +8,6 @@ namespace BaseFormLib
 {
     public class BaseForm : Window
     {
-        // TODO: Fix auto scroll not working properly!
-
         private ListBox? chatList;
         public static readonly int standardBufferSize = 1024;
         public static readonly int minBufferSize = 1;
